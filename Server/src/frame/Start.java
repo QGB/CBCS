@@ -1,14 +1,19 @@
+package frame;
+import handler.LogIn;
+import handler.ReadDB;
+import handler.Reg;
+import handler.WriteDB;
+import handler.myHandler;
 import httpserver.HttpRouter;
 import httpserver.HttpServer;
 
-import java.lang.reflect.Field;
 
-import qgb.T;
+import qgb.*;
 
 public class Start {
 	public static void main(){main(null);}
 	public static void main(String[] a){		
-		T.print(T.getSourcePath(Start.class));
+		U.print(U.getSourcePath(Start.class));
 		try {
 			Class.forName(DB.class.getName());
 		} catch (ClassNotFoundException e) {
@@ -16,11 +21,14 @@ public class Start {
 			return;
 		}
 		
-   	 T.setErrStream("err.txt");
+	 U.setErrStream("err.txt");
      HttpServer s = new HttpServer(8080);
 	 HttpRouter r = new HttpRouter();
-	 r.addHandler("t", new myHandler());
+	 r.addHandler("t.zip", new myHandler());
 	 r.addHandler("reg", new Reg());
+	 r.addHandler("login", new LogIn());
+	 r.addHandler("read", new ReadDB());
+	 r.addHandler("write", new WriteDB());
 	 s.setRouter(r);
 	 s.run();
 	}

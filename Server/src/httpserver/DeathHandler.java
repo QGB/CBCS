@@ -3,7 +3,7 @@ package httpserver;
 import java.util.ArrayList;
 import java.util.Random;
 
-import qgb.T;
+import qgb.*;
 
 /**
  * A DeathHandler should only be called if something bad occurs.
@@ -47,7 +47,7 @@ class DeathHandler extends HttpHandler {
   public void handle(HttpRequest request, HttpResponse resp) {
     //super.handle(request);
       String httpRequestType = request.getRequestType().toUpperCase();
-      T.msgbox(httpRequestType);
+      //T.msgbox(httpRequestType);
     String message = errorMessages.get(
             new Random().nextInt(errorMessages.size()));
 

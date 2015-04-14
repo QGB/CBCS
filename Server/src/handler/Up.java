@@ -1,5 +1,8 @@
+package handler;
 import java.util.Map;
 
+import frame.DB;
+import frame.Start;
 import httpserver.HttpHandler;
 import httpserver.HttpRequest;
 import httpserver.HttpResponse;
@@ -12,7 +15,7 @@ import httpserver.Set;
  * Success:uid 1-...
  * fail:< -1
  * */
-public class Reg extends HttpHandler {
+public class Up extends HttpHandler {
 
 	public static void main(String[] args) {
 		Start.main();
@@ -25,22 +28,16 @@ public class Reg extends HttpHandler {
 			return;
 		}
 		
-		String sname="",smail="";
+		String smail="",spw="";
 		for(Map.Entry<String, String> me: req.getParams().entrySet()){
-			if (me.getKey().equals("n")) {
-				sname=me.getValue();
-			}
-			
 			if (me.getKey().equals("m")) {
 				smail=me.getValue();
 			}
+			if (me.getKey().equals("p")) {
+				spw=me.getValue();
+			}
 		}
-		rsp.setBody(DB.reg(sname,smail));
+		rsp.setBody(DB.checkUser(smail, spw));
 	}
-
-//	private String regUesr(String sname, String smail) {
-//		return "0";
-//	}
-//	
 
 }

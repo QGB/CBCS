@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 
-import qgb.T;
+import qgb.*;
 
 /**
  * An HttpHandler is what all handlers used by your server descend from. <p>
