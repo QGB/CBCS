@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import qgb.T;
+import qgb.U;
+
 /**
  * An HttpRequest takes an incoming connection and parses out all of the
  * relevant data, supposing the connection follows HTTP protocol.
@@ -114,10 +117,14 @@ public class HttpRequest implements Runnable {
             e.printStackTrace();
         }
     }
-
+    
     public HttpResponse createResponse() throws IOException, HttpException {
         parseRequest();
         HttpResponse response = new HttpResponse(this);
+        if(Set.gbPrintRequest){
+        	U.print(T.format("[%s]------------%s------------", ++Set.gi,U.getCurrentTime()));
+        	U.print(this.toString());
+        }
         determineHandler().handle(this, response);
 
         return response;

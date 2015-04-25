@@ -3,7 +3,6 @@ import handler.LogIn;
 import handler.ReadDB;
 import handler.Reg;
 import handler.WriteDB;
-import handler.myHandler;
 import httpserver.HttpRouter;
 import httpserver.HttpServer;
 
@@ -22,9 +21,9 @@ public class Start {
 		}
 		
 	 U.setErrStream("err.txt");
-     HttpServer s = new HttpServer(8080);
+     HttpServer s = new HttpServer(8765);
 	 HttpRouter r = new HttpRouter();
-	 r.addHandler("t.zip", new myHandler());
+	// r.addHandler("t.zip", new myHandler());
 	 r.addHandler("reg", new Reg());
 	 r.addHandler("login", new LogIn());
 	 r.addHandler("read", new ReadDB());
