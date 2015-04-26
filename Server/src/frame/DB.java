@@ -1,6 +1,4 @@
 package frame;
-import httpserver.Set;
-
 import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -22,7 +20,7 @@ public class DB {
 
 	private static void testSqlite() throws ClassNotFoundException {
 		Class.forName(DB.class.getName());
-		U.print(reg("name","323244","asPW"," stel", "sdorm", "sdepart"," sclass","男"));
+		U.print(reg("name","323244","asPW"," stel", "sdorm", "sdepart"," sclass","�"));
 		U.print(writeDbByField("1",gsCDepart, gsTableUsr,"ttt"));
 		U.print(readDbByField("1", gsCDepart,gsTableUsr));
 		U.exit();
