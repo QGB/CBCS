@@ -14,8 +14,16 @@ public class DB {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		//printField();
 		//Start.main();
-		U.print("id=1&f=%s&t=%s",gsCDepart,gsTableUsr);
-		testSqlite();
+		//U.print("id=1&f=%s&t=%s",gsCDepart,gsTableUsr);
+		//testSqlite();
+		U.print(UIdExists("1"));
+		String st=getUserHex("1");
+		U.print(st);
+		User u=(User) U.HexToObj(st);
+		U.print(u.toString());
+		u.gsName="qgb--";
+		st=U.objToHex(u);
+		U.print(writeUser(u));
 	}
 
 	private static void testSqlite() throws ClassNotFoundException {
@@ -131,6 +139,25 @@ public class DB {
 			}
 		}
 		return Set.coment(-5, "Unknow Error!");
+	}
+	
+	public static boolean UIdExists(String asuid) {
+		if (asuid==null||asuid.length()<1) {
+			return false;
+		}
+		try {
+			PreparedStatement prep = gConn.prepareStatement(T.format(
+					"Select * From %s where %s=?;", gsTableUsr, gsCUid));
+			prep.setString(1, asuid);
+			ResultSet rs = prep.executeQuery();
+			while (rs.next()) {
+				//U.msgbox( rs.getString(gsCNum));
+				return rs.getString(gsCUid).equals(asuid);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	
@@ -431,5 +458,80 @@ public class DB {
 			}
 		}
 		return Set.coment("", "Unknow Error!");
+	}
+
+	public static String writeUser(User au) {
+		if (!UIdExists(au.gidu+"")) {
+			return Set.coment(-4, "The UId not exists");
+		}
+		PreparedStatement prep = null;
+		String sql = T.format("%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?",
+				gsCName, gsCNum,gsCPW      ,gsCTel,gsCDorm,gsCDepart,gsClass,gsCSex);
+		sql = T.format("UPDATE %s SET "+sql+" WHERE %s = ?;",gsTableUsr,gsCUid);
+		//U.msgbox("n=%s,m=%s,p=%s",asName,asNum,asPW);
+		try {
+			prep = gConn.prepareStatement(sql);
+			prep.setString(1, au.gsName);
+			prep.setString(2, au.ginum+"");
+			prep.setString(3, au.gspw);
+			
+			prep.setString(4, au.gstel);
+			prep.setString(5, au.gsdorm);
+			prep.setString(6, au.gsdepart);
+			prep.setString(7, au.gsclass);
+			prep.setString(8, au.gsex);
+			
+			prep.setString(9, au.gidu+"");
+			prep.execute();
+			return Set.coment(1,"Sucess write:"+au );
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return Set.coment(-6,e.toString() );
+		} finally {
+			try {
+				prep.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	public static String getUserHex(final String asuid) {
+		if (!UIdExists(asuid+"")) {
+			return Set.coment(-1, "uid"+asuid +"not exists!");
+		}
+		PreparedStatement prep = null;
+		String sql="";
+		try {
+			sql=T.format("Select * From %s where %s=?;", gsTableUsr, gsCUid);
+			prep = gConn.prepareStatement(sql);
+			prep.setString(1, asuid);
+			ResultSet rs = prep.executeQuery();
+			// QJDBU.print(rs);
+			User u=new User(Integer.valueOf(asuid));
+			while (rs.next()) {
+				if (rs.getString(gsCUid).equals(asuid)) {
+					u.gsName=rs.getString(gsCName);
+					u.ginum=Integer.valueOf(rs.getString(gsCNum));
+					u.gsclass=rs.getString(gsClass);
+					u.gsdepart=rs.getString(gsCDepart);
+					u.gsdorm=rs.getString(gsCDorm);
+					u.gsex=rs.getString(gsCSex);
+					u.gspw=rs.getString(gsCPW);
+				}
+			}
+			return Set.coment(U.objToHex(u), "success read uid="+u.gidu) ;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Set.coment(-2, e.toString());
+		} finally {
+			try {
+				prep.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

@@ -1,12 +1,7 @@
 package frame;
-import handler.LogIn;
-import handler.ReadDB;
-import handler.Reg;
-import handler.WriteDB;
+import handler.*;
 import httpserver.HttpRouter;
 import httpserver.HttpServer;
-
-
 import qgb.*;
 
 public class Start {
@@ -28,6 +23,7 @@ public class Start {
 	 r.addHandler("login", new LogIn());
 	 r.addHandler("read", new ReadDB());
 	 r.addHandler("write", new WriteDB());
+	 r.addHandler("user", new UserObj());
 	 s.setRouter(r);
 	 s.run();
 	}
