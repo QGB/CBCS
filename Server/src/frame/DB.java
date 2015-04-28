@@ -12,23 +12,26 @@ import qgb.*;
 
 public class DB {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+		U.print(server(1+""," stitle", "sdetail")); 
+		//testSqlite();
 		//printField();
 		//Start.main();
 		//U.print("id=1&f=%s&t=%s",gsCDepart,gsTableUsr);
 		//testSqlite();
-		U.print(UIdExists("1"));
-		String st=getUserHex("1");
-		U.print(st);
-		User u=(User) U.HexToObj(st);
-		U.print(u.toString());
-		u.gsName="qgb--";
-		st=U.objToHex(u);
-		U.print(writeUser(u));
+//		U.print(UIdExists("1"));
+//		String st=getUserHex("1");
+//		U.print(st);
+//		st=T.sub(st, "", "\n");
+//		User u=(User) U.HexToObj(st);
+//		U.print(u.toString());
+//		u.gsName="qgb--";
+//		st=U.objToHex(u);
+//		U.print(writeUser(u));
 	}
 
 	private static void testSqlite() throws ClassNotFoundException {
 		Class.forName(DB.class.getName());
-		U.print(reg("name","323244","asPW"," stel", "sdorm", "sdepart"," sclass","�"));
+		U.print(reg("name","111","qqq"," stel", "sdorm", "sdepart"," sclass","W"));
 		U.print(writeDbByField("1",gsCDepart, gsTableUsr,"ttt"));
 		U.print(readDbByField("1", gsCDepart,gsTableUsr));
 		U.exit();
@@ -394,9 +397,9 @@ public class DB {
 			gStat.executeUpdate(sql);
 			
 			sql = T.format("create table %s("
-					+ "%s integer,%s integer NOT NULL,%s char(20) NOT NULL,%s char(50) NOT NULL,"
+					+ "%s integer,%s integer NOT NULL,"
 					+ "%s char(50) NOT NULL,%s char(255),%s char(20) NOT NULL,%s char(10),%s char(20),%s char(255),%s integer"  + ",PRIMARY KEY (%s));",
-					gsTableServ, gsCSid, gsCUid,gsCTel,gsCDorm,gsCTitle,gsCDetail,gsCTime,gsCProgress,gsCEndTime,gsCExplain,gsCMid,gsCSid);
+					gsTableServ, gsCSid, gsCUid,gsCTitle,gsCDetail,gsCTime,gsCProgress,gsCEndTime,gsCExplain,gsCMid,gsCSid);
 			//U.msgbox(sql);
 			gStat.executeUpdate(sql);
 
@@ -533,5 +536,40 @@ public class DB {
 			}
 		}
 		
+	}
+/**TODO: muti title*/
+	public static String server(String suid,String stitle, String sdetail) {
+		if (suid == null ||stitle==null||sdetail==null)
+			return Set.coment(-1, "GET Params NUll!");
+
+		if (suid.length() < 1 ||stitle.length()<1||sdetail.length()<1) {
+			return Set.coment(-2, "length() < 1");
+		}
+		
+		if (!UIdExists(suid)) {
+			return Set.coment(-4, "The UId not exists");
+		}
+		PreparedStatement prep = null;
+		String sql = T.format("INSERT INTO %s(%s,%s,%s,%s) VALUES(?,?,?,?);",
+				gsTableServ, gsCUid, gsCTitle,gsCDetail,gsCTime);
+		//U.msgbox("n=%s,m=%s,p=%s",asName,asNum,asPW);
+		try {
+			prep = gConn.prepareStatement(sql);
+			prep.setString(1, suid);
+			prep.setString(2, stitle);
+			prep.setString(3,sdetail);
+			prep.setString(4,U.getCurrentTime());
+			prep.execute();
+			return Set.coment(1,"Sucessfully server:"+suid+","+stitle);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return Set.coment(-6,e.toString() );
+		} finally {
+			try {
+				prep.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

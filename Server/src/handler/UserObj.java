@@ -19,8 +19,8 @@ import httpserver.HttpResponse;
 public class UserObj extends HttpHandler {
 
 	public static void main(String[] args) {
-		 Start.main();
-		//U.print(U.gstEclipseA);
+		 //Start.main();
+		U.print(U.gstEclipseA);
 	}
 
 	@Override
