@@ -24,7 +24,7 @@ public class Start {
 	 r.addHandler("read", new ReadDB());
 	 r.addHandler("write", new WriteDB());
 	 r.addHandler("user", new UserObj());
-	 r.addHandler("server", new ServerH());
+	 r.addHandler("server", new ServerObj());
 	 s.setRouter(r);
 	 s.run();
 	}

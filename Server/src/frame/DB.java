@@ -7,19 +7,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import qgb.*;
 
 public class DB {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		U.print(server(1+""," stitle", "sdetail")); 
+		//U.print(server(1+""," stitle", "sdetail")); 
 		//testSqlite();
 		//printField();
-		//Start.main();
+		Start.main();
 		//U.print("id=1&f=%s&t=%s",gsCDepart,gsTableUsr);
 		//testSqlite();
 //		U.print(UIdExists("1"));
-//		String st=getUserHex("1");
+		String st=getServersByUID("3");
+		st=T.sub(st, "","\n");
+		U.print("%s\n%s",st,st.length());
+		
+		ArrayList<Server> als=(ArrayList<Server>) U.HexToObj(st);
+		U.print(als );
+		
+		
 //		U.print(st);
 //		st=T.sub(st, "", "\n");
 //		User u=(User) U.HexToObj(st);
@@ -27,11 +35,12 @@ public class DB {
 //		u.gsName="qgb--";
 //		st=U.objToHex(u);
 //		U.print(writeUser(u));
+
 	}
 
 	private static void testSqlite() throws ClassNotFoundException {
 		Class.forName(DB.class.getName());
-		U.print(reg("name","111","qqq"," stel", "sdorm", "sdepart"," sclass","W"));
+		U.print(reg("name","311","qqq"," stel", "置还能提高服务器的", "置还能"," sclass","W"));
 		U.print(writeDbByField("1",gsCDepart, gsTableUsr,"ttt"));
 		U.print(readDbByField("1", gsCDepart,gsTableUsr));
 		U.exit();
@@ -219,6 +228,11 @@ public class DB {
 		}
 		return Set.coment(-5, "Unknow Error!");
 	}
+
+	public static String reg(User u) {
+		return reg(u.getsName(), u.getInum(), u.getSpw(),u.getStel(),u.getSdorm(),u.getSdepart(),u.getSclass(),u.getSex());
+	}
+	
 	public static String reg(String asName, String asNum,String asPW, String stel, String sdorm, String sdepart, String sclass, String sex) {
 		if (asName == null || asNum == null||asPW==null)
 			return Set.coment(-1, "GET Params NUll!");
@@ -275,15 +289,21 @@ public class DB {
 			prep.setString(1, asNum);
 			ResultSet rs = prep.executeQuery();
 			// QJDBU.print(rs);
-			int id = -1;
+			//int id = -1;
 			while (rs.next()) {
 				if (rs.getString(gsCNum).equals(asNum)) {
-					id = Integer.valueOf(rs.getString(gsCUid));
-					return Set.coment(id, "Successfully regist!");
+					String str=rs.getString(gsCUid);
+					//U.print("[%s]",str);
+					if (str==null||str.length()<1) {
+						throw new Exception("select UID is null");
+					}
+					//id = Integer.valueOf(rs.getString(gsCUid));
+					return Set.coment(str, "Successfully regist!");
 				}
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			return Set.coment(-4, e.toString());
 		} finally {
 			try {
 				prep.close();
@@ -465,7 +485,7 @@ public class DB {
 
 	public static String writeUser(User au) {
 		if (!UIdExists(au.gidu+"")) {
-			return Set.coment(-4, "The UId not exists");
+			return reg(au);
 		}
 		PreparedStatement prep = null;
 		String sql = T.format("%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?",
@@ -474,15 +494,15 @@ public class DB {
 		//U.msgbox("n=%s,m=%s,p=%s",asName,asNum,asPW);
 		try {
 			prep = gConn.prepareStatement(sql);
-			prep.setString(1, au.gsName);
-			prep.setString(2, au.ginum+"");
-			prep.setString(3, au.gspw);
+			prep.setString(1, au.getsName());
+			prep.setString(2, au.getInum());
+			prep.setString(3, au.getSpw());
 			
-			prep.setString(4, au.gstel);
-			prep.setString(5, au.gsdorm);
-			prep.setString(6, au.gsdepart);
-			prep.setString(7, au.gsclass);
-			prep.setString(8, au.gsex);
+			prep.setString(4, au.getStel());
+			prep.setString(5, au.getSdorm());
+			prep.setString(6, au.getSdepart());
+			prep.setString(7, au.getSclass());
+			prep.setString(8, au.getSex());
 			
 			prep.setString(9, au.gidu+"");
 			prep.execute();
@@ -500,6 +520,7 @@ public class DB {
 		
 	}
 
+
 	public static String getUserHex(final String asuid) {
 		if (!UIdExists(asuid+"")) {
 			return Set.coment(-1, "uid"+asuid +"not exists!");
@@ -515,13 +536,14 @@ public class DB {
 			User u=new User(Integer.valueOf(asuid));
 			while (rs.next()) {
 				if (rs.getString(gsCUid).equals(asuid)) {
-					u.gsName=rs.getString(gsCName);
-					u.ginum=Integer.valueOf(rs.getString(gsCNum));
-					u.gsclass=rs.getString(gsClass);
-					u.gsdepart=rs.getString(gsCDepart);
-					u.gsdorm=rs.getString(gsCDorm);
-					u.gsex=rs.getString(gsCSex);
-					u.gspw=rs.getString(gsCPW);
+					u.setsName(rs.getString(gsCName));
+					u.setInum(rs.getString(gsCNum));
+					u.setSclass(rs.getString(gsClass));
+					u.setSdepart(rs.getString(gsCDepart));
+					u.setSdorm(rs.getString(gsCDorm));
+					u.setSex(rs.getString(gsCSex));
+					u.setSpw(rs.getString(gsCPW));
+					u.setStel(rs.getString(gsCTel));
 				}
 			}
 			return Set.coment(U.objToHex(u), "success read uid="+u.gidu) ;
@@ -572,4 +594,47 @@ public class DB {
 			}
 		}
 	}
+
+public static String getServersByUID(String asuid) {
+	if (!UIdExists(asuid+"")) {
+		return Set.coment(-1, "uid"+asuid +"not exists!");
+	}
+	PreparedStatement prep = null;
+	String sql="";
+	try {
+		sql=T.format("Select * From %s where %s=?;", gsTableServ, gsCUid);
+		prep = gConn.prepareStatement(sql);
+		prep.setString(1, asuid);
+		ResultSet rs = prep.executeQuery();
+		// QJDBU.print(rs);
+		ArrayList<Server> als=new ArrayList<Server>();
+		int idu=Integer.valueOf(asuid);
+		while (rs.next()) {
+			if (rs.getString(gsCUid).equals(asuid)) {
+				Server s=new Server(idu);
+				
+				s.setIdm(rs.getString(gsCMid));
+				s.setIds(rs.getString(gsCSid));
+				s.setSdetail(rs.getString(gsCDetail));
+				s.setSendTime(rs.getString(gsCEndTime));
+				s.setSexplain(rs.getString(gsCExplain));
+				s.setSprogress(rs.getString(gsCProgress));
+				s.setStime(rs.getString(gsCTime));
+				s.setStitle(rs.getString(gsCTitle));
+				als.add(s);
+			}
+		}
+		
+		return Set.coment(U.objToHex(als), "success read uid="+asuid) ;
+	} catch (Exception e) {
+		e.printStackTrace();
+		return Set.coment(-2, e.toString());
+	} finally {
+		try {
+			prep.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}
 }

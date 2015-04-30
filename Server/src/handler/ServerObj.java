@@ -2,8 +2,10 @@ package handler;
 
 import java.util.Map;
 
+import qgb.T;
 import qgb.U;
 import frame.DB;
+import frame.Server;
 import frame.Set;
 import frame.Start;
 import frame.User;
@@ -11,46 +13,45 @@ import httpserver.HttpHandler;
 import httpserver.HttpRequest;
 import httpserver.HttpResponse;
 
-/**
- * t(type)w:write[t=w,o],
- * 
- * r:read[t=r,uid];
- * */
-public class UserObj extends HttpHandler {
+public class ServerObj extends HttpHandler {
 
 	public static void main(String[] args) {
-		 //Start.main();
-		U.print(U.gstEclipseA);
+		Start.main();
+		//U.print(U.gstEclipseA);
 	}
-
+	
 	@Override
 	public void handle(HttpRequest req, HttpResponse rsp) {
-		if (req.getParams().size() < 2) {
-			Set.coment(rsp, -1, "GET Params Count Error!");
+		if (req.getParams().size()<2) {
+			Set.coment(rsp,-1,"GET Params Count Error!");
 			return;
 		}
-
-		String sObj = "", suid = "", st = "";
-		for (Map.Entry<String, String> me : req.getParams().entrySet()) {
+		
+		String sObj="",st="",sdetail="",suid="";
+		for(Map.Entry<String, String> me: req.getParams().entrySet()){
 			if (me.getKey().equals("obj")) {
-				sObj = me.getValue();
+				sObj=me.getValue();
 			}
+
 			if (me.getKey().equals("t")) {
-				st = me.getValue();
+				st=me.getValue();
 			}
+
 			if (me.getKey().equals("uid")) {
-				suid = me.getValue();
+				suid=me.getValue();
 			}
 		}
+
 		if (st != null) {
 			st = st.toLowerCase();
 			if (st.equals("w")) {
 				try {
 					if (sObj == null || sObj.length() < 2)
 						U.argsError(sObj, st);
-					User u = (User) U.HexToObj(sObj);
-					if (u==null)throw new Exception("obj User is null");
-					rsp.setBody(DB.writeUser(u));
+					Server s = (Server) U.HexToObj(sObj);
+					if (s==null)throw new Exception("obj Server is null");
+					//U.msgbox(u);
+					rsp.setBody(DB.server(s.idu+"",s.getStitle(), s.getSdetail()));
 				} catch (Exception e) {
 					Set.coment(rsp, -21, e.toString());
 				}
@@ -58,7 +59,7 @@ public class UserObj extends HttpHandler {
 				try {
 					if (suid == null || suid.length() < 1)
 						U.argsError(suid, st);
-					rsp.setBody(DB.getUserHex(suid));
+					rsp.setBody(DB.getServersByUID(suid));
 				} catch (Exception e) {
 					Set.coment(rsp, -21, e.toString());
 				}
@@ -69,5 +70,6 @@ public class UserObj extends HttpHandler {
 		return;
 
 	}
+
 
 }
